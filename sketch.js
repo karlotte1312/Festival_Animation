@@ -1,3 +1,14 @@
+function preload() {
+  // Lade alle Bilder vor dem Setup
+  for (let i = 0; i < shapeImagePaths.length; i++) {
+    for (let j = 0; j < shapeImagePaths[i].length; j++) {
+      loadImage(shapeImagePaths[i][j], () => {}, () => {
+        console.error("Fehler beim Laden von:", shapeImagePaths[i][j]);
+      });
+    }
+  }
+}
+
 // Globale Variablen
 let shapes = [];
 const numShapes = 5;
@@ -30,16 +41,7 @@ class Shape {
   this.id = shapes.length;
 }
 
-function preload() {
-  // Lade alle Bilder vor dem Setup
-  for (let i = 0; i < shapeImagePaths.length; i++) {
-    for (let j = 0; j < shapeImagePaths[i].length; j++) {
-      loadImage(shapeImagePaths[i][j], () => {}, () => {
-        console.error("Fehler beim Laden von:", shapeImagePaths[i][j]);
-      });
-    }
-  }
-}
+
   
   update() {
     this.x += this.vx;
