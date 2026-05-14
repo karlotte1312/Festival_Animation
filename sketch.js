@@ -76,11 +76,12 @@ class Shape {
   }
 
  handleCollision(other) {
-  // ✅ Bildwechsel: nächstes PNG aus Array
+handleCollision(other) {
+  // ✅ Nur Bildwechsel – kein loadImage!
   this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
-   this.img = loadImage(this.imgPaths[this.currentImgIndex], () => {}, () => {
-    console.error("Fehler beim Laden von:", this.imgPaths[this.currentImgIndex]);
-  });
+  // ✅ Kein loadImage hier!
+  // ✅ Das Bild wurde bereits in preload() geladen
+}
 
 
     // ✅ Normalvektor (von other zu this)
