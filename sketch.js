@@ -62,8 +62,8 @@ class Shape {
   checkCollision(other) {
     let dx = this.x - other.x;
     let dy = this.y - other.y;
-    let distance = sqrt(dx * dx + dy * dy);
-    return distance < this.radius + other.radius;
+    let dist = sqrt(dx * dx + dy * dy);
+    return dist < this.radius + other.radius;
   }
 
   handleCollision(other) {
@@ -84,10 +84,6 @@ class Shape {
     );
 
     // ✅ Trennabstand
-    let dx = this.x - other.x;
-    let dy = this.y - other.y;
-    let dist = sqrt(dx * dx + dy * dy);
-    if (dist === 0) return;
 
     let nx = dx / dist;
     let ny = dy / dist;
