@@ -1,6 +1,6 @@
 // Globale Variablen
 let shapes = [];
-const numShapes = 7;
+const numShapes = 5;
 const radius = 30;
 const speed = 2.0;
 
