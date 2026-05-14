@@ -1,6 +1,3 @@
-//Hier stoßen sich die Teile nicht genug ab und es ändert immer nur ein Bild.
-
-
 // Globale Variablen
 let shapes = [];
 const numShapes = 5;
