@@ -67,9 +67,19 @@ class Shape {
   }
 
   handleCollision(other) {
-    // ✅ Farbwechsel (optional)
-    this.color = colors[floor(random(colors.length))];
-    other.color = colors[floor(random(colors.length))];
+  
+        // ✅ Bildwechsel: nächstes PNG aus Array
+    this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
+    this.img = loadImage(
+      this.imgPaths[this.currentImgIndex],
+      () => {},
+      () => {
+        console.error(
+          "Fehler beim Laden von:",
+          this.imgPaths[this.currentImgIndex]
+        );
+      }
+    );
 
     // ✅ Normalvektor (von other zu this)
     let dx = this.x - other.x;
