@@ -182,4 +182,4 @@ for (let i = 0; i < shapes.length; i++) {
     shape.update();
     shape.display();
   }
-}
+
