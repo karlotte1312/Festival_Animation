@@ -164,23 +164,22 @@ function setup() {
 function draw() {
   background(10, 10, 10);
 
-  // Kollisionen prüfen und behandeln
-  for (let i = 0; i < shapes.length; i++) {
-    for (let j = i + 1; j < shapes.length; j++) {
-      let s1 = shapes[i];
-      let s2 = shapes[j];
+for (let i = 0; i < shapes.length; i++) {
+  for (let j = i + 1; j < shapes.length; j++) {
+    let s1 = shapes[i];
+    let s2 = shapes[j];
 
-      if (
-        frameCount - lastCollision[i] < 10 ||
-        frameCount - lastCollision[j] < 10
-      ) {
-        continue;
-      }
-
-      if (s1.checkCollision(s2)) {
-        s1.handleCollision(s2);
-      }
+    if (frameCount - lastCollision[i] < 10 || frameCount - lastCollision[j] < 10) {
+      continue;
     }
+
+    if (s1.checkCollision(s2)) {
+      // ✅ Beide Formen wechseln das Bild!
+      s1.handleCollision(s2);
+      s2.handleCollision(s1); // ← Hier: s2 ruft handleCollision auf
+    }
+  }
+}
   }
 
   // Alle Formen anzeigen
