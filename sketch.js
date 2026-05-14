@@ -1,3 +1,12 @@
+// ✅ Array mit Pfaden zu den PNGs für jede Form
+const shapeImagePaths = [
+  ["assets/shape7/1.png", "assets/shape7/2.png", "assets/shape7/3.png"],
+  ["assets/shape3/1.png", "assets/shape3/2.png", "assets/shape3/3.png"],
+  ["assets/shape4/1.png", "assets/shape4/2.png", "assets/shape4/3.png"],
+  ["assets/shape5/1.png", "assets/shape5/2.png", "assets/shape5/3.png"],
+  ["assets/shape6/1.png", "assets/shape6/2.png", "assets/shape6/3.png"]
+];
+
 function preload() {
   // Lade alle Bilder vor dem Setup
   for (let i = 0; i < shapeImagePaths.length; i++) {
@@ -30,16 +39,6 @@ class Shape {
   }
 
 
-
-
-// ✅ Array mit Pfaden zu den PNGs für jede Form
-const shapeImagePaths = [
-  ["assets/shape7/1.png", "assets/shape7/2.png", "assets/shape7/3.png"],
-  ["assets/shape3/1.png", "assets/shape3/2.png", "assets/shape3/3.png"],
-  ["assets/shape4/1.png", "assets/shape4/2.png", "assets/shape4/3.png"],
-  ["assets/shape5/1.png", "assets/shape5/2.png", "assets/shape5/3.png"],
-  ["assets/shape6/1.png", "assets/shape6/2.png", "assets/shape6/3.png"]
-];
 
 // ✅ Kollisionsschutz
 let lastCollision = [];
