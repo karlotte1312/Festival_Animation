@@ -9,6 +9,21 @@ function preload() {
   }
 }
 
+class Shape {
+  constructor(x, y, imgPaths) {
+    this.x = x;
+    this.y = y;
+    let angle = random(TWO_PI);
+    this.vx = cos(angle) * speed;
+    this.vy = sin(angle) * speed;
+    this.imgPaths = imgPaths;
+    this.currentImgIndex = 0;
+    this.img = null; // Kein loadImage hier!
+    this.radius = radius;
+    this.id = shapes.length;
+  }
+
+
 // Globale Variablen
 let shapes = [];
 const numShapes = 5;
@@ -27,19 +42,7 @@ const shapeImagePaths = [
 // ✅ Kollisionsschutz
 let lastCollision = [];
 
-class Shape {
- constructor(x, y, imgPaths) {
-  this.x = x;
-  this.y = y;
-  let angle = random(TWO_PI);
-  this.vx = cos(angle) * speed;
-  this.vy = sin(angle) * speed;
-  this.imgPaths = imgPaths;
-  this.currentImgIndex = 0;
-  this.img = null; // Kein loadImage hier!
-  this.radius = radius;
-  this.id = shapes.length;
-}
+
 
 
   
