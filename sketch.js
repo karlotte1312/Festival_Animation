@@ -1,16 +1,36 @@
 // Globale Variablen
 let shapes = [];
 const numShapes = 5;
-const radius = 30;
+const radius = 45;
 const speed = 2.0;
 
 // ✅ Array mit Pfaden zu den PNGs für jede Form
 const shapeImagePaths = [
-  ["assets/shape7/1.png", "assets/shape7/2.png", "assets/shape7/3.png"],
-  ["assets/shape3/1.png", "assets/shape3/2.png", "assets/shape3/3.png"],
-  ["assets/shape4/1.png", "assets/shape4/2.png", "assets/shape4/3.png"],
-  ["assets/shape5/1.png", "assets/shape5/2.png", "assets/shape5/3.png"],
-  ["assets/shape6/1.png", "assets/shape6/2.png", "assets/shape6/3.png"]
+  [
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape3/1.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape3/2.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape3/3.png"
+  ],
+  [
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape5/1.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape6/2.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape7/3.png"
+  ],
+  [
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape5/1.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape5/2.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape5/3.png"
+  ],
+  [
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape6/1.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape6/2.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape6/3.png"
+  ],
+  [
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape7/1.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape7/2.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape7/3.png"
+  ]
 ];
 
 // ✅ Kollisionsschutz
@@ -35,8 +55,6 @@ class Shape {
     this.radius = radius;
     this.id = shapes.length;
   }
-
-//hier ohne preload, funktioniert
 
   update() {
     this.x += this.vx;
@@ -64,61 +82,55 @@ class Shape {
   checkCollision(other) {
     let dx = this.x - other.x;
     let dy = this.y - other.y;
-    let dist = sqrt(dx * dx + dy * dy);
-    return dist < this.radius + other.radius;
+    let distance = sqrt(dx * dx + dy * dy);
+    return distance < this.radius + other.radius;
   }
 
   handleCollision(other) {
-  // ✅ Bildwechsel: nächstes PNG aus Array
-  this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
+    // ✅ Normalvektor (von other zu this)
+    let dx = this.x - other.x;
+    let dy = this.y - other.y;
+    let dist = sqrt(dx * dx + dy * dy);
 
-  // ✅ Kein loadImage hier!
-  // ✅ Das Bild wurde bereits in preload() geladen
+    if (dist === 0) return;
 
-  // ✅ Normalvektor (von other zu this)
-  let dx = this.x - other.x;
-  let dy = this.y - other.y;
-  let dist = sqrt(dx * dx + dy * dy);
+    let nx = dx / dist;
+    let ny = dy / dist;
 
-  if (dist === 0) return;
+    // Geschwindigkeitsvektor von this
+    let v1x = this.vx;
+    let v1y = this.vy;
 
-  let nx = dx / dist;
-  let ny = dy / dist;
+    // Geschwindigkeitsvektor von other
+    let v2x = other.vx;
+    let v2y = other.vy;
 
-  // Geschwindigkeitsvektor von this
-  let v1x = this.vx;
-  let v1y = this.vy;
+    // ✅ Projektion der Geschwindigkeiten auf die Normale
+    let dot1 = v1x * nx + v1y * ny;
+    let dot2 = v2x * nx + v2y * ny;
 
-  // Geschwindigkeitsvektor von other
-  let v2x = other.vx;
-  let v2y = other.vy;
+    // ✅ Stärkere Reflexion: nur die Normalkomponente wird umgekehrt
+    this.vx = v1x - 2 * dot1 * nx;
+    this.vy = v1y - 2 * dot1 * ny;
 
-  // ✅ Projektion der Geschwindigkeiten auf die Normale
-  let dot1 = v1x * nx + v1y * ny;
-  let dot2 = v2x * nx + v2y * ny;
+    other.vx = v2x - 2 * dot2 * nx;
+    other.vy = v2y - 2 * dot2 * ny;
 
-  // ✅ Stärkere Reflexion: nur die Normalkomponente wird umgekehrt
-  this.vx = v1x - 2 * dot1 * nx;
-  this.vy = v1y - 2 * dot1 * ny;
+    // ✅ Trennabstand: schiebe sie leicht auseinander
+    let overlap = this.radius + other.radius - dist;
+    if (overlap > 0) {
+      let pushX = nx * overlap * 0.5;
+      let pushY = ny * overlap * 0.5;
+      this.x += pushX;
+      this.y += pushY;
+      other.x -= pushX;
+      other.y -= pushY;
+    }
 
-  other.vx = v2x - 2 * dot2 * nx;
-  other.vy = v2y - 2 * dot2 * ny;
-
-  // ✅ Trennabstand
-  let overlap = (this.radius + other.radius) - dist;
-  if (overlap > 0) {
-    let pushX = nx * overlap * 0.5;
-    let pushY = ny * overlap * 0.5;
-    this.x += pushX;
-    this.y += pushY;
-    other.x -= pushX;
-    other.y -= pushY;
+    // ✅ Kollisionsschutz
+    lastCollision[this.id] = frameCount;
+    lastCollision[other.id] = frameCount;
   }
-
-  // ✅ Kollisionsschutz
-  lastCollision[this.id] = frameCount;
-  lastCollision[other.id] = frameCount;
-}
 
   display() {
     if (this.img) {
@@ -134,7 +146,7 @@ class Shape {
 }
 
 function setup() {
-  createCanvas(600, 800);
+  createCanvas(400, 500);
   colorMode(HSB, 360, 100, 100, 1);
 
   // Zufällige Startpositionen
@@ -167,10 +179,7 @@ function draw() {
       }
 
       if (s1.checkCollision(s2)) {
-      // ✅ Beide Formen wechseln das Bild!
-      s1.handleCollision(s2);
-      s2.handleCollision(s1); // ← Hier: s2 ruft handleCollision auf
-
+        s1.handleCollision(s2);
       }
     }
   }
