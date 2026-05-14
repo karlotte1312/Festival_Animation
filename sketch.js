@@ -43,9 +43,6 @@ class Shape {
 // ✅ Kollisionsschutz
 let lastCollision = [];
 
-
-
-
   
   update() {
     this.x += this.vx;
