@@ -17,19 +17,18 @@ const shapeImagePaths = [
 let lastCollision = [];
 
 class Shape {
-  constructor(x, y, imgPaths) {
-    this.x = x;
-    this.y = y;
-    let angle = random(TWO_PI);
-    this.vx = cos(angle) * speed;
-    this.vy = sin(angle) * speed;
-    this.imgPaths = imgPaths;
-    this.currentImgIndex = 0;
-
-    );
-    this.radius = radius;
-    this.id = shapes.length;
-  }
+ constructor(x, y, imgPaths) {
+  this.x = x;
+  this.y = y;
+  let angle = random(TWO_PI);
+  this.vx = cos(angle) * speed;
+  this.vy = sin(angle) * speed;
+  this.imgPaths = imgPaths;
+  this.currentImgIndex = 0;
+  this.img = null; // Kein loadImage hier!
+  this.radius = radius;
+  this.id = shapes.length;
+}
 
 function preload() {
   // Lade alle Bilder vor dem Setup
@@ -72,20 +71,12 @@ function preload() {
     return distance < this.radius + other.radius;
   }
 
-  handleCollision(other) {
-  
-        // ✅ Bildwechsel: nächstes PNG aus Array
-    this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
-    this.img = loadImage(
-      this.imgPaths[this.currentImgIndex],
-      () => {},
-      () => {
-        console.error(
-          "Fehler beim Laden von:",
-          this.imgPaths[this.currentImgIndex]
-        );
-      }
-    );
+ handleCollision(other) {
+  // ✅ Bildwechsel: nächstes PNG aus Array
+  this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
+  this.img = loadImage(this.imgPaths[this.currentImgIndex], () => {}, () => {
+    console.error("Fehler beim Laden von:", this.imgPaths[this.currentImgIndex]);
+  });
 
     // ✅ Normalvektor (von other zu this)
     let dx = this.x - other.x;
@@ -116,21 +107,29 @@ function preload() {
     other.vx = v2x - 2 * dot2 * nx;
     other.vy = v2y - 2 * dot2 * ny;
 
-    // ✅ Trennabstand: schiebe sie leicht auseinander
-    let overlap = this.radius + other.radius - dist;
-    if (overlap > 0) {
-      let pushX = nx * overlap * 0.5;
-      let pushY = ny * overlap * 0.5;
-      this.x += pushX;
-      this.y += pushY;
-      other.x -= pushX;
-      other.y -= pushY;
-    }
+  // ✅ Trennabstand
+  let dx = this.x - other.x;
+  let dy = this.y - other.y;
+  let dist = sqrt(dx * dx + dy * dy);
+  if (dist === 0) return;
 
-    // ✅ Kollisionsschutz
-    lastCollision[this.id] = frameCount;
-    lastCollision[other.id] = frameCount;
+  let nx = dx / dist;
+  let ny = dy / dist;
+
+  let overlap = (this.radius + other.radius) - dist;
+  if (overlap > 0) {
+    let pushX = nx * overlap * 0.5;
+    let pushY = ny * overlap * 0.5;
+    this.x += pushX;
+    this.y += pushY;
+    other.x -= pushX;
+    other.y -= pushY;
   }
+
+  // ✅ Kollisionsschutz
+  lastCollision[this.id] = frameCount;
+  lastCollision[other.id] = frameCount;
+}
 
   display() {
     if (this.img) {
