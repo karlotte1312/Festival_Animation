@@ -9,6 +9,12 @@ function preload() {
   }
 }
 
+// Globale Variablen
+let shapes = [];
+const numShapes = 5;
+const radius = 60;
+const speed = 2.0;
+
 class Shape {
   constructor(x, y, imgPaths) {
     this.x = x;
@@ -24,11 +30,7 @@ class Shape {
   }
 
 
-// Globale Variablen
-let shapes = [];
-const numShapes = 5;
-const radius = 60;
-const speed = 2.0;
+
 
 // ✅ Array mit Pfaden zu den PNGs für jede Form
 const shapeImagePaths = [
