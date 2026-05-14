@@ -37,9 +37,7 @@ class Shape {
     this.vy = sin(angle) * speed;
     this.imgPaths = imgPaths;
     this.currentImgIndex = 0;
-    this.img = loadImage(imgPaths[0], () => {}, () => {
-  console.error("Fehler beim Laden von:", imgPaths[0]);
-});
+   this.img = null; // Kein loadImage hier!
     this.radius = radius;
     this.id = shapes.length;
     
@@ -75,7 +73,6 @@ class Shape {
     return distance < this.radius + other.radius;
   }
 
- handleCollision(other) {
 handleCollision(other) {
   // ✅ Nur Bildwechsel – kein loadImage!
   this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
