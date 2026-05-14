@@ -33,9 +33,12 @@ class Shape {
     this.vy = sin(angle) * speed;
     this.imgPaths = imgPaths;
     this.currentImgIndex = 0;
-    this.img = null; // Kein loadImage hier!
+    this.img = loadImage(imgPaths[0], () => {}, () => {
+  console.error("Fehler beim Laden von:", imgPaths[0]);
+});
     this.radius = radius;
     this.id = shapes.length;
+    
   }
 
 
@@ -77,9 +80,7 @@ let lastCollision = [];
  handleCollision(other) {
   // ✅ Bildwechsel: nächstes PNG aus Array
   this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
-  this.img = loadImage(this.imgPaths[this.currentImgIndex], () => {}, () => {
-    console.error("Fehler beim Laden von:", this.imgPaths[this.currentImgIndex]);
-  });
+
 
     // ✅ Normalvektor (von other zu this)
     let dx = this.x - other.x;
