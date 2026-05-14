@@ -78,6 +78,9 @@ class Shape {
  handleCollision(other) {
   // ✅ Bildwechsel: nächstes PNG aus Array
   this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
+   this.img = loadImage(this.imgPaths[this.currentImgIndex], () => {}, () => {
+    console.error("Fehler beim Laden von:", this.imgPaths[this.currentImgIndex]);
+  });
 
 
     // ✅ Normalvektor (von other zu this)
