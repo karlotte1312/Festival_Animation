@@ -110,14 +110,7 @@ class Shape {
     other.vy = v2y - 2 * dot2 * ny;
 
   // ✅ Trennabstand
-  let dx = this.x - other.x;
-  let dy = this.y - other.y;
-  let dist = sqrt(dx * dx + dy * dy);
-  if (dist === 0) return;
-
-  let nx = dx / dist;
-  let ny = dy / dist;
-
+  
   let overlap = (this.radius + other.radius) - dist;
   if (overlap > 0) {
     let pushX = nx * overlap * 0.5;
