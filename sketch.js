@@ -1,7 +1,7 @@
 // Globale Variablen
 let shapes = [];
 const numShapes = 5;
-const radius = 30;
+const radius = 60;
 const speed = 2.0;
 
 // ✅ Array mit Pfaden zu den PNGs für jede Form
