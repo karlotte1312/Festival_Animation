@@ -1,3 +1,6 @@
+Hier stoßen sich die Teile nicht genug ab und es ändert immer nur ein Bild.
+
+
 // Globale Variablen
 let shapes = [];
 const numShapes = 5;
@@ -36,6 +39,8 @@ class Shape {
     this.id = shapes.length;
   }
 
+//hier ohne preload, funktioniert
+
   update() {
     this.x += this.vx;
     this.y += this.vy;
@@ -67,8 +72,6 @@ class Shape {
   }
 
   handleCollision(other) {
-    // ✅ Farbwechsel (optional) – oder weglassen, wenn du nur Bilder willst
-    // this.color = colors[floor(random(colors.length))];
 
     // ✅ Bildwechsel: nächstes PNG aus Array
     this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
@@ -82,6 +85,13 @@ class Shape {
         );
       }
     );
+
+    // ✅ Stärkere Reflexion: nur die Normalkomponente wird umgekehrt
+    this.vx = v1x - 2 * dot1 * nx;
+    this.vy = v1y - 2 * dot1 * ny;
+
+    other.vx = v2x - 2 * dot2 * nx;
+    other.vy = v2y - 2 * dot2 * ny;
 
     // ✅ Trennabstand
 
@@ -150,7 +160,10 @@ function draw() {
       }
 
       if (s1.checkCollision(s2)) {
-        s1.handleCollision(s2);
+      // ✅ Beide Formen wechseln das Bild!
+      s1.handleCollision(s2);
+      s2.handleCollision(s1); // ← Hier: s2 ruft handleCollision auf
+
       }
     }
   }
@@ -161,4 +174,3 @@ function draw() {
     shape.display();
   }
 }
-
