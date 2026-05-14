@@ -1,40 +1,44 @@
 // Globale Variablen
 let shapes = [];
-const numShapes = 7
+const numShapes = 7;
 const radius = 30;
-const speed = 1.6; // ✅ Geschwindigkeit: 2.0 (schneller!)
+const speed = 2.0;
 
-// Farbpalette (HSB)
-const colors = [
-  [0, 100, 100],   // Rot
-  [60, 100, 100],  // Gelb
-  [120, 100, 100], // Grün
-  [180, 100, 100], // Cyan
-  [240, 100, 100], // Blau
-  [300, 100, 100], // Magenta
-  [360, 100, 100]  // Rot (wieder)
+// ✅ Array mit Pfaden zu den PNGs für jede Form
+const shapeImagePaths = [
+  ['assets/shape1/1.png', 'assets/shape1/2.png', 'assets/shape1/3.png'],
+  ['assets/shape2/1.png', 'assets/shape2/2.png', 'assets/shape2/3.png'],
+  ['assets/shape3/1.png', 'assets/shape3/2.png', 'assets/shape3/3.png'],
+  ['assets/shape4/1.png', 'assets/shape4/2.png', 'assets/shape4/3.png'],
+  ['assets/shape5/1.png', 'assets/shape5/2.png', 'assets/shape5/3.png'],
+  ['assets/shape6/1.png', 'assets/shape6/2.png', 'assets/shape6/3.png'],
+  ['assets/shape7/1.png', 'assets/shape7/2.png', 'assets/shape7/3.png']
 ];
 
-// ✅ Kollisionsschutz: Track, ob Kollision gerade stattgefunden hat
+// ✅ Kollisionsschutz
 let lastCollision = [];
 
 class Shape {
-  constructor(x, y) {
+  constructor(x, y, imgPaths) {
     this.x = x;
     this.y = y;
     let angle = random(TWO_PI);
     this.vx = cos(angle) * speed;
     this.vy = sin(angle) * speed;
-    this.color = colors[floor(random(colors.length))];
+    this.imgPaths = imgPaths;
+    this.currentImgIndex = 0;
+    this.img = loadImage(imgPaths[0], () => {}, () => {
+      console.error("Fehler beim Laden von:", imgPaths[0]);
+    });
     this.radius = radius;
-    this.id = shapes.length; // ID für Kollisionsschutz
+    this.id = shapes.length;
   }
 
   update() {
     this.x += this.vx;
     this.y += this.vy;
 
-    // Kollision mit Wänden (Bildrand)
+    // Kollision mit Wänden
     if (this.x < this.radius) {
       this.x = this.radius;
       this.vx *= -1;
@@ -61,40 +65,24 @@ class Shape {
   }
 
   handleCollision(other) {
-    // ✅ Farbwechsel
-    this.color = colors[floor(random(colors.length))];
-    other.color = colors[floor(random(colors.length))];
+    // ✅ Farbwechsel (optional) – oder weglassen, wenn du nur Bilder willst
+    // this.color = colors[floor(random(colors.length))];
 
-    // ✅ Normalvektor
+    // ✅ Bildwechsel: nächstes PNG aus Array
+    this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
+    this.img = loadImage(this.imgPaths[this.currentImgIndex], () => {}, () => {
+      console.error("Fehler beim Laden von:", this.imgPaths[this.currentImgIndex]);
+    });
+
+    // ✅ Trennabstand
     let dx = this.x - other.x;
     let dy = this.y - other.y;
     let dist = sqrt(dx * dx + dy * dy);
-
     if (dist === 0) return;
 
     let nx = dx / dist;
     let ny = dy / dist;
 
-    // Geschwindigkeitsvektor von this
-    let v1x = this.vx;
-    let v1y = this.vy;
-
-    // Geschwindigkeitsvektor von other
-    let v2x = other.vx;
-    let v2y = other.vy;
-
-    // Projektion der Geschwindigkeiten auf die Normale
-    let dot1 = v1x * nx + v1y * ny;
-    let dot2 = v2x * nx + v2y * ny;
-
-    // ✅ Reflexion (Billard-Physik)
-    this.vx = v1x - 2 * dot1 * nx;
-    this.vy = v1y - 2 * dot1 * ny;
-
-    other.vx = v2x - 2 * dot2 * nx;
-    other.vy = v2y - 2 * dot2 * ny;
-
-    // ✅ Trennabstand: schiebe sie leicht auseinander
     let overlap = (this.radius + other.radius) - dist;
     if (overlap > 0) {
       let pushX = nx * overlap * 0.5;
@@ -105,31 +93,30 @@ class Shape {
       other.y -= pushY;
     }
 
-    // ✅ Kollisionsschutz: verhindere sofortige Wiederholung
+    // ✅ Kollisionsschutz
     lastCollision[this.id] = frameCount;
     lastCollision[other.id] = frameCount;
   }
 
   display() {
-    fill(this.color[0], this.color[1], this.color[2]);
-    noStroke();
-    ellipse(this.x, this.y, this.radius * 2);
+    if (this.img) {
+      image(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+    }
   }
 }
 
 function setup() {
-  createCanvas(300, 400); // ✅ Bildgröße: 600 × 800 px
+  createCanvas(600, 800);
   colorMode(HSB, 360, 100, 100, 1);
 
   // Zufällige Startpositionen
   for (let i = 0; i < numShapes; i++) {
     let x = random(100, width - 100);
     let y = random(100, height - 100);
-    let shape = new Shape(x, y);
-    shapes.push(shape);
+    shapes.push(new Shape(x, y, shapeImagePaths[i]));
   }
 
-  // ✅ Initialisiere Kollisionsschutz
+  // ✅ Kollisionsschutz initialisieren
   for (let i = 0; i < numShapes; i++) {
     lastCollision[i] = 0;
   }
@@ -144,7 +131,6 @@ function draw() {
       let s1 = shapes[i];
       let s2 = shapes[j];
 
-      // ✅ Kollisionsschutz: verhindere Kollision, wenn gerade passiert
       if (frameCount - lastCollision[i] < 10 || frameCount - lastCollision[j] < 10) {
         continue;
       }
@@ -155,7 +141,7 @@ function draw() {
     }
   }
 
-  // Alle Formen aktualisieren und anzeigen
+  // Alle Formen anzeigen
   for (let shape of shapes) {
     shape.update();
     shape.display();
