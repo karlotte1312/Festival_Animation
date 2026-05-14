@@ -1,18 +1,16 @@
 // Globale Variablen
 let shapes = [];
-const numShapes = 7;
+const numShapes = 5;
 const radius = 30;
 const speed = 2.0;
 
 // ✅ Array mit Pfaden zu den PNGs für jede Form
 const shapeImagePaths = [
-  ['assets/shape1/1.png', 'assets/shape1/2.png', 'assets/shape1/3.png'],
-  ['assets/shape2/1.png', 'assets/shape2/2.png', 'assets/shape2/3.png'],
-  ['assets/shape3/1.png', 'assets/shape3/2.png', 'assets/shape3/3.png'],
-  ['assets/shape4/1.png', 'assets/shape4/2.png', 'assets/shape4/3.png'],
-  ['assets/shape5/1.png', 'assets/shape5/2.png', 'assets/shape5/3.png'],
-  ['assets/shape6/1.png', 'assets/shape6/2.png', 'assets/shape6/3.png'],
-  ['assets/shape7/1.png', 'assets/shape7/2.png', 'assets/shape7/3.png']
+  ["assets/shape7/1.png", "assets/shape7/2.png", "assets/shape7/3.png"],
+  ["assets/shape3/1.png", "assets/shape3/2.png", "assets/shape3/3.png"],
+  ["assets/shape4/1.png", "assets/shape4/2.png", "assets/shape4/3.png"],
+  ["assets/shape5/1.png", "assets/shape5/2.png", "assets/shape5/3.png"],
+  ["assets/shape6/1.png", "assets/shape6/2.png", "assets/shape6/3.png"]
 ];
 
 // ✅ Kollisionsschutz
@@ -27,9 +25,13 @@ class Shape {
     this.vy = sin(angle) * speed;
     this.imgPaths = imgPaths;
     this.currentImgIndex = 0;
-    this.img = loadImage(imgPaths[0], () => {}, () => {
-      console.error("Fehler beim Laden von:", imgPaths[0]);
-    });
+    this.img = loadImage(
+      imgPaths[0],
+      () => {},
+      () => {
+        console.error("Fehler beim Laden von:", imgPaths[0]);
+      }
+    );
     this.radius = radius;
     this.id = shapes.length;
   }
@@ -61,7 +63,7 @@ class Shape {
     let dx = this.x - other.x;
     let dy = this.y - other.y;
     let distance = sqrt(dx * dx + dy * dy);
-    return distance < (this.radius + other.radius);
+    return distance < this.radius + other.radius;
   }
 
   handleCollision(other) {
@@ -70,9 +72,16 @@ class Shape {
 
     // ✅ Bildwechsel: nächstes PNG aus Array
     this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
-    this.img = loadImage(this.imgPaths[this.currentImgIndex], () => {}, () => {
-      console.error("Fehler beim Laden von:", this.imgPaths[this.currentImgIndex]);
-    });
+    this.img = loadImage(
+      this.imgPaths[this.currentImgIndex],
+      () => {},
+      () => {
+        console.error(
+          "Fehler beim Laden von:",
+          this.imgPaths[this.currentImgIndex]
+        );
+      }
+    );
 
     // ✅ Trennabstand
     let dx = this.x - other.x;
@@ -83,7 +92,7 @@ class Shape {
     let nx = dx / dist;
     let ny = dy / dist;
 
-    let overlap = (this.radius + other.radius) - dist;
+    let overlap = this.radius + other.radius - dist;
     if (overlap > 0) {
       let pushX = nx * overlap * 0.5;
       let pushY = ny * overlap * 0.5;
@@ -100,7 +109,13 @@ class Shape {
 
   display() {
     if (this.img) {
-      image(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+      image(
+        this.img,
+        this.x - this.radius,
+        this.y - this.radius,
+        this.radius * 2,
+        this.radius * 2
+      );
     }
   }
 }
@@ -131,7 +146,10 @@ function draw() {
       let s1 = shapes[i];
       let s2 = shapes[j];
 
-      if (frameCount - lastCollision[i] < 10 || frameCount - lastCollision[j] < 10) {
+      if (
+        frameCount - lastCollision[i] < 10 ||
+        frameCount - lastCollision[j] < 10
+      ) {
         continue;
       }
 
