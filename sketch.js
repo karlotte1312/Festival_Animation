@@ -25,17 +25,23 @@ class Shape {
     this.vy = sin(angle) * speed;
     this.imgPaths = imgPaths;
     this.currentImgIndex = 0;
-    this.img = loadImage(
-      imgPaths[0],
-      () => {},
-      () => {
-        console.error("Fehler beim Laden von:", imgPaths[0]);
-      }
+
     );
     this.radius = radius;
     this.id = shapes.length;
   }
 
+function preload() {
+  // Lade alle Bilder vor dem Setup
+  for (let i = 0; i < shapeImagePaths.length; i++) {
+    for (let j = 0; j < shapeImagePaths[i].length; j++) {
+      loadImage(shapeImagePaths[i][j], () => {}, () => {
+        console.error("Fehler beim Laden von:", shapeImagePaths[i][j]);
+      });
+    }
+  }
+}
+  
   update() {
     this.x += this.vx;
     this.y += this.vy;
