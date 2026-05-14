@@ -72,7 +72,10 @@ class Shape {
   }
 
   handleCollision(other) {
-
+let dx = this.x - other.x;
+    let dy = this.y - other.y;
+    let dist = sqrt(dx * dx + dy * dy);
+    return dist < this.radius + other.radius;
     // ✅ Bildwechsel: nächstes PNG aus Array
     this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
     this.img = loadImage(
