@@ -1,3 +1,7 @@
+
+// ✅ Kollisionsschutz
+let lastCollision = [];
+
 // ✅ Array mit Pfaden zu den PNGs für jede Form
 const shapeImagePaths = [
   ["assets/shape7/1.png", "assets/shape7/2.png", "assets/shape7/3.png"],
@@ -40,12 +44,6 @@ class Shape {
     this.id = shapes.length;
     
   }
-
-
-
-// ✅ Kollisionsschutz
-let lastCollision = [];
-
   
   update() {
     this.x += this.vx;
