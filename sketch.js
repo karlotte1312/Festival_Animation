@@ -1,7 +1,4 @@
 
-// ✅ Kollisionsschutz
-let lastCollision = [];
-
 // ✅ Array mit Pfaden zu den PNGs für jede Form
 const shapeImagePaths = [
   ["assets/shape7/1.png", "assets/shape7/2.png", "assets/shape7/3.png"],
@@ -27,6 +24,9 @@ let shapes = [];
 const numShapes = 5;
 const radius = 60;
 const speed = 2.0;
+
+// ✅ Kollisionsschutz
+let lastCollision = [];
 
 class Shape {
   constructor(x, y, imgPaths) {
