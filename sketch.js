@@ -36,6 +36,17 @@ const shapeImagePaths = [
 // ✅ Kollisionsschutz
 let lastCollision = [];
 
+function preload() {
+  // Lade alle Bilder vor dem Setup
+  for (let i = 0; i < shapeImagePaths.length; i++) {
+    for (let j = 0; j < shapeImagePaths[i].length; j++) {
+      loadImage(shapeImagePaths[i][j], () => {}, () => {
+        console.error("Fehler beim Laden von:", shapeImagePaths[i][j]);
+      });
+    }
+  }
+}
+
 class Shape {
   constructor(x, y, imgPaths) {
     this.x = x;
@@ -45,13 +56,7 @@ class Shape {
     this.vy = sin(angle) * speed;
     this.imgPaths = imgPaths;
     this.currentImgIndex = 0;
-    this.img = loadImage(
-      imgPaths[0],
-      () => {},
-      () => {
-        console.error("Fehler beim Laden von:", imgPaths[0]);
-      }
-    );
+    this.img = null; // Kein loadImage hier!
     this.radius = radius;
     this.id = shapes.length;
   }
