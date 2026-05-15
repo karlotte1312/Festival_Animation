@@ -3,18 +3,14 @@ let shapes = [];
 const numShapes = 5;
 const radius = 45;
 const speed = 2.0;
+let bgImg;
 
-// ✅ Array mit Pfaden zu den PNGs für jede Form
+// Array mit Pfaden zu den PNGs für jede Form
 const shapeImagePaths = [
   [
     "https://karlotte1312.github.io/Festival_Animation/assets/shape3/1.png",
     "https://karlotte1312.github.io/Festival_Animation/assets/shape3/2.png",
     "https://karlotte1312.github.io/Festival_Animation/assets/shape3/3.png"
-  ],
-  [
-    "https://karlotte1312.github.io/Festival_Animation/assets/shape5/1.png",
-    "https://karlotte1312.github.io/Festival_Animation/assets/shape6/2.png",
-    "https://karlotte1312.github.io/Festival_Animation/assets/shape7/3.png"
   ],
   [
     "https://karlotte1312.github.io/Festival_Animation/assets/shape5/1.png",
@@ -30,10 +26,15 @@ const shapeImagePaths = [
     "https://karlotte1312.github.io/Festival_Animation/assets/shape7/1.png",
     "https://karlotte1312.github.io/Festival_Animation/assets/shape7/2.png",
     "https://karlotte1312.github.io/Festival_Animation/assets/shape7/3.png"
+  ],
+  [
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape3/1.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape3/2.png",
+    "https://karlotte1312.github.io/Festival_Animation/assets/shape3/3.png"
   ]
 ];
 
-// ✅ Kollisionsschutz
+// Kollisionsschutz
 let lastCollision = [];
 
 class Shape {
@@ -45,9 +46,17 @@ class Shape {
     this.vy = sin(angle) * speed;
     this.imgPaths = imgPaths;
     this.currentImgIndex = 0;
-    this.img = null; // Kein loadImage hier!
+    this.images = []; // Array für alle Bilder dieser Form
     this.radius = radius;
     this.id = shapes.length;
+  }
+
+  // Lade alle Bilder für diese Form
+  preloadImages() {
+    for (let path of this.imgPaths) {
+      this.images.push(loadImage(path));
+    }
+    this.img = this.images[this.currentImgIndex]; // Setze das erste Bild
   }
 
   update() {
@@ -81,8 +90,14 @@ class Shape {
   }
 
   handleCollision(other) {
-     this.currentImgIndex = (this.currentImgIndex + 1) % this.imgPaths.length;
-    // ✅ Normalvektor (von other zu this)
+    // 🔄 Beide Formen wechseln ihr Bild
+    this.currentImgIndex = (this.currentImgIndex + 1) % this.images.length;
+    this.img = this.images[this.currentImgIndex];
+
+    other.currentImgIndex = (other.currentImgIndex + 1) % other.images.length;
+    other.img = other.images[other.currentImgIndex];
+
+    // Rest der Kollisionslogik bleibt gleich...
     let dx = this.x - other.x;
     let dy = this.y - other.y;
     let dist = sqrt(dx * dx + dy * dy);
@@ -92,26 +107,19 @@ class Shape {
     let nx = dx / dist;
     let ny = dy / dist;
 
-    // Geschwindigkeitsvektor von this
     let v1x = this.vx;
     let v1y = this.vy;
-
-    // Geschwindigkeitsvektor von other
     let v2x = other.vx;
     let v2y = other.vy;
 
-    // ✅ Projektion der Geschwindigkeiten auf die Normale
     let dot1 = v1x * nx + v1y * ny;
     let dot2 = v2x * nx + v2y * ny;
 
-    // ✅ Stärkere Reflexion: nur die Normalkomponente wird umgekehrt
     this.vx = v1x - 2 * dot1 * nx;
     this.vy = v1y - 2 * dot1 * ny;
-
     other.vx = v2x - 2 * dot2 * nx;
     other.vy = v2y - 2 * dot2 * ny;
 
-    // ✅ Trennabstand: schiebe sie leicht auseinander
     let overlap = this.radius + other.radius - dist;
     if (overlap > 0) {
       let pushX = nx * overlap * 0.5;
@@ -122,11 +130,9 @@ class Shape {
       other.y -= pushY;
     }
 
-    // ✅ Kollisionsschutz
     lastCollision[this.id] = frameCount;
     lastCollision[other.id] = frameCount;
   }
-
   display() {
     if (this.img) {
       image(
@@ -140,33 +146,40 @@ class Shape {
   }
 }
 
+function preload() {
+  bgImg = loadImage("https://karlotte1312.github.io/Festival_Animation/assets/background1.png");
+  console.log("Hintergrundbild geladen:", bgImg); // Debugging
+} // Ersetze mit deinem Pfad
+
+  // Lade alle Bilder für alle Formen
+  for (let i = 0; i < numShapes; i++) {
+    let shape = new Shape(0, 0, shapeImagePaths[i]);
+    shape.preloadImages();
+    shapes.push(shape);
+  }
+
 function setup() {
   createCanvas(400, 500);
   colorMode(HSB, 360, 100, 100, 1);
-  
-    for (let i = 0; i < shapeImagePaths.length; i++) {
-    for (let j = 0; j < shapeImagePaths[i].length; j++) {
-      loadImage(shapeImagePaths[i][j], () => {}, () => {
-        console.error("Fehler beim Laden von:", shapeImagePaths[i][j]);
-      });
-    }
+
+  // Setze zufällige Startpositionen
+  for (let shape of shapes) {
+    shape.x = random(radius, width - radius);
+    shape.y = random(radius, height - radius);
   }
 
-  // Zufällige Startpositionen
-  for (let i = 0; i < numShapes; i++) {
-    let x = random(100, width - 100);
-    let y = random(100, height - 100);
-    shapes.push(new Shape(x, y, shapeImagePaths[i]));
-  }
-
-  // ✅ Kollisionsschutz initialisieren
+  // Kollisionsschutz initialisieren
   for (let i = 0; i < numShapes; i++) {
     lastCollision[i] = 0;
   }
 }
 
 function draw() {
-  background(10, 10, 10);
+  if (bgImg) {
+    image(bgImg, 0, 0, width, height);
+  } else {
+    background(10, 10, 10); // Fallback, falls Bild nicht lädt
+  }
 
   // Kollisionen prüfen und behandeln
   for (let i = 0; i < shapes.length; i++) {
