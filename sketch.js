@@ -3,7 +3,6 @@ let shapes = [];
 const numShapes = 5;
 const radius = 45;
 const speed = 2.0;
-let bgImg;
 
 // Array mit Pfaden zu den PNGs für jede Form
 const shapeImagePaths = [
@@ -133,6 +132,7 @@ class Shape {
     lastCollision[this.id] = frameCount;
     lastCollision[other.id] = frameCount;
   }
+
   display() {
     if (this.img) {
       image(
@@ -147,16 +147,13 @@ class Shape {
 }
 
 function preload() {
-  bgImg = loadImage("https://karlotte1312.github.io/Festival_Animation/assets/background1.png");
-  console.log("Hintergrundbild geladen:", bgImg); // Debugging
-} // Ersetze mit deinem Pfad
-
   // Lade alle Bilder für alle Formen
   for (let i = 0; i < numShapes; i++) {
     let shape = new Shape(0, 0, shapeImagePaths[i]);
     shape.preloadImages();
     shapes.push(shape);
   }
+}
 
 function setup() {
   createCanvas(400, 500);
@@ -175,11 +172,7 @@ function setup() {
 }
 
 function draw() {
-  if (bgImg) {
-    image(bgImg, 0, 0, width, height);
-  } else {
-    background(10, 10, 10); // Fallback, falls Bild nicht lädt
-  }
+  background(10, 10, 10);
 
   // Kollisionen prüfen und behandeln
   for (let i = 0; i < shapes.length; i++) {
