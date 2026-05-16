@@ -150,7 +150,7 @@ class Shape {
 
 function preload() {
   bgImg = loadImage(
-    "https://karlotte1312.github.io/Festival_Animation/assets/background1.png"
+    "https://karlotte1312.github.io/Festival_Animation/assets/Background2.png"
   ); // Ersetze mit deinem Pfad
   // Lade alle Bilder für alle Formen
   for (let i = 0; i < numShapes; i++) {
